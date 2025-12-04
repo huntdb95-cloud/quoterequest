@@ -512,6 +512,39 @@
     const MAPSCO_API_KEY = "6930d4d437fad769672610qmbb9060f"; // replace with your maps.co key
     let addressDebounceTimeout = null;
 
+    // Format address as: house number, street name, city, state, zip
+    function formatShortAddress(item) {
+      const addr = item.address || {};
+
+      const streetParts = [];
+      if (addr.house_number) streetParts.push(addr.house_number);
+      if (addr.road) streetParts.push(addr.road);
+
+      const city =
+        addr.city ||
+        addr.town ||
+        addr.village ||
+        addr.hamlet ||
+        addr.municipality ||
+        "";
+
+      const state = addr.state || addr.state_code || "";
+      const zip = addr.postcode || "";
+
+      const parts = [];
+
+      if (streetParts.length) parts.push(streetParts.join(" "));
+      if (city) parts.push(city);
+      if (state) parts.push(state);
+      if (zip) parts.push(zip);
+
+      if (!parts.length && item.display_name) {
+        return item.display_name; // fallback
+      }
+
+      return parts.join(", ");
+    }
+
     function clearAddressSuggestions() {
       if (addressSuggestions) {
         addressSuggestions.innerHTML = '';
@@ -523,14 +556,16 @@
       if (!Array.isArray(results) || results.length === 0 || !addressSuggestions) return;
 
       results.forEach(item => {
-        const li = document.createElement('li');
-        li.textContent = item.display_name;
+        const li = document.createElement("li");
+        const shortAddress = formatShortAddress(item);
+
+        li.textContent = shortAddress;
         li.dataset.lat = item.lat;
         li.dataset.lon = item.lon;
 
-        li.addEventListener('click', () => {
+        li.addEventListener("click", () => {
           if (addressInput) {
-            addressInput.value = item.display_name;
+            addressInput.value = shortAddress; // use trimmed format
           }
 
           if (addressLatField) addressLatField.value = item.lat || "";
