@@ -3,248 +3,448 @@
 <head>
   <meta charset="UTF-8">
   <title>Insurance Professionals of Tennessee - Quote Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    :root {
+      --ipt-navy: #003366;
+      --ipt-gold: #d4af37;
+      --ipt-bg: #f5f9ff;
+      --ipt-border: #d6e2f2;
+      --ipt-text: #162436;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
-      background-color: #f5f9ff;
-      color: #003366;
-      margin: 20px;
+      background: linear-gradient(135deg, #edf3ff, #f9fbff);
+      color: var(--ipt-text);
+      margin: 0;
+      padding: 0;
     }
+
+    .page-container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
+
     header img {
-      max-width: 200px;
+      max-width: 220px;
+      height: auto;
     }
+
+    h1 {
+      color: var(--ipt-navy);
+      font-size: 1.8rem;
+      margin: 0 0 16px;
+      letter-spacing: 0.03em;
+    }
+
     h2 {
-      color: #003366;
+      color: var(--ipt-navy);
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 1.2rem;
     }
+
+    h3 {
+      color: var(--ipt-navy);
+      font-size: 1.05rem;
+      margin-top: 16px;
+    }
+
     .section {
-      border: 2px solid #d4af37;
-      padding: 15px;
+      background-color: #ffffff;
+      border: 1px solid var(--ipt-border);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+      padding: 16px 16px 18px;
       margin-bottom: 20px;
-      border-radius: 8px;
+      border-radius: 10px;
     }
+
     label {
       display: block;
       margin-top: 10px;
+      font-size: 0.95rem;
     }
-    input, select {
+
+    input,
+    select {
       width: 100%;
-      padding: 8px;
+      padding: 8px 10px;
       margin-top: 5px;
+      border: 1px solid #c3cfe2;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      background-color: #fdfdff;
     }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--ipt-gold);
+      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25);
+      background-color: #ffffff;
+    }
+
     input.small-input {
-      width: 250px !important;
+      width: 500px;  /* twice as long as before on desktop */
       display: inline-block;
+      max-width: 100%;
     }
+
+    .field-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      align-items: flex-start;
+    }
+
     button {
-      background-color: #003366;
+      background-color: var(--ipt-navy);
       color: white;
-      padding: 12px 20px;
+      padding: 12px 24px;
       border: none;
       border-radius: 6px;
       cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+      transition: background-color 0.15s ease, transform 0.1s ease,
+        box-shadow 0.15s ease, color 0.15s ease;
     }
+
     button:hover {
-      background-color: #d4af37;
-      color: #003366;
+      background-color: var(--ipt-gold);
+      color: var(--ipt-navy);
+      transform: translateY(-1px);
+      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.25);
     }
+
     #langToggle {
-      padding: 8px 12px;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      background-color: #ffffff;
+      color: var(--ipt-navy);
+      border: 1px solid var(--ipt-border);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    #langToggle:hover {
+      background-color: var(--ipt-gold);
+      color: var(--ipt-navy);
+    }
+
+    /* Address autocomplete styles */
+    .address-wrapper {
+      position: relative;
+      display: inline-block;
+      margin-top: 10px;
+    }
+
+    .address-wrapper input.small-input {
+      /* Match the new General Info field width on desktop */
+      width: 500px;
+      max-width: 100%;
+    }
+
+    #address-suggestions {
+      position: absolute;
+      top: calc(100% + 2px);
+      left: 0;
+      z-index: 1000;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      background-color: #ffffff;
+      border: 1px solid #c3cfe2;
+      max-height: 220px;
+      overflow-y: auto;
+      box-sizing: border-box;
+      width: 100%; /* exactly match the input width via wrapper */
+      border-radius: 6px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    #address-suggestions li {
+      padding: 8px 10px;
+      cursor: pointer;
       font-size: 0.9rem;
+      border-bottom: 1px solid #eef2fb;
+    }
+
+    #address-suggestions li:last-child {
+      border-bottom: none;
+    }
+
+    #address-suggestions li:hover {
+      background-color: #f3f6ff;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 700px) {
+      .page-container {
+        padding: 16px 12px 32px;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      input.small-input {
+        width: 100% !important; /* small inputs go full width on mobile */
+      }
+
+      .address-wrapper {
+        display: block;
+        width: 100%;
+      }
+
+      .address-wrapper input.small-input {
+        width: 100% !important; /* address full width on mobile */
+      }
+
+      #address-suggestions {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div>
-      <img src="logo.jpg" alt="Insurance Professionals of Tennessee Logo">
-    </div>
-    <div>
-      <button type="button" id="langToggle">Español</button>
-    </div>
-  </header>
+  <div class="page-container">
+    <header>
+      <div>
+        <img src="logo.jpg" alt="Insurance Professionals of Tennessee Logo">
+      </div>
+      <div>
+        <button type="button" id="langToggle">Español</button>
+      </div>
+    </header>
 
-  <h1 id="formTitle">Insurance Quote Request</h1>
+    <h1 id="formTitle">Insurance Quote Request</h1>
 
-  <form id="quoteForm" action="https://formspree.io/f/meoykwea" method="POST">
-    <!-- General Info -->
-    <div class="section">
-      <h2 id="generalInfoTitle">General Information</h2>
+    <form id="quoteForm" action="https://formspree.io/f/meoykwea" method="POST">
+      <!-- General Info -->
+      <div class="section">
+        <h2 id="generalInfoTitle">General Information</h2>
 
-      <label>
-        <span id="nameLabel">Name:</span>
-        <input type="text" name="name" required class="small-input">
-      </label>
+        <label>
+          <span id="nameLabel">Name:</span>
+          <input type="text" name="name" required class="small-input">
+        </label>
 
-      <label>
-        <span id="emailLabel">Email:</span>
-        <input type="email" name="email" required class="small-input">
-      </label>
+        <!-- Address autocomplete -->
+        <div class="address-wrapper">
+          <label>
+            <span id="addressLabel">Address:</span>
+            <input
+              type="text"
+              name="address"
+              id="address-input"
+              autocomplete="off"
+              class="small-input"
+              placeholder="Start typing your address..."
+            >
+          </label>
+          <ul id="address-suggestions"></ul>
+          <input type="hidden" id="address-lat" name="address_lat">
+          <input type="hidden" id="address-lon" name="address_lon">
+        </div>
 
-      <label>
-        <span id="phoneLabel">Phone:</span>
-        <input type="tel" name="phone" required class="small-input">
-      </label>
-    </div>
+        <label>
+          <span id="emailLabel">Email:</span>
+          <input type="email" name="email" required class="small-input">
+        </label>
 
-    <!-- Quote Type Selection -->
-    <div class="section">
-      <h2 id="quoteTypeTitle">Select Quote Types</h2>
-      <label>
-        <input type="checkbox" id="wcglCheck">
-        <span id="wcglLabel">Workers Compensation &amp; General Liability</span>
-      </label>
-      <label>
-        <input type="checkbox" id="autoCheck">
-        <span id="autoLabel">Auto Insurance</span>
-      </label>
-      <label>
-        <input type="checkbox" id="homeCheck">
-        <span id="homeLabel">Homeowners Insurance</span>
-      </label>
-    </div>
+        <label>
+          <span id="phoneLabel">Phone:</span>
+          <input type="tel" name="phone" required class="small-input">
+        </label>
+      </div>
 
-    <!-- Workers Comp & GL -->
-    <div class="section" id="wcglFields" style="display:none;">
-      <h2 id="wcglTitle">Workers Compensation &amp; General Liability</h2>
+      <!-- Quote Type Selection -->
+      <div class="section">
+        <h2 id="quoteTypeTitle">Select Quote Types</h2>
+        <label>
+          <input type="checkbox" id="wcglCheck">
+          <span id="wcglLabel">Workers Compensation &amp; General Liability</span>
+        </label>
+        <label>
+          <input type="checkbox" id="autoCheck">
+          <span id="autoLabel">Auto Insurance</span>
+        </label>
+        <label>
+          <input type="checkbox" id="homeCheck">
+          <span id="homeLabel">Homeowners Insurance</span>
+        </label>
+      </div>
 
-      <label>
-        <span id="businessTypeLabel">Type of Business Operation:</span>
-        <input type="text" name="businessType">
-      </label>
+      <!-- Workers Comp & GL -->
+      <div class="section" id="wcglFields" style="display:none;">
+        <h2 id="wcglTitle">Workers Compensation &amp; General Liability</h2>
 
-      <label>
-        <span id="weeklyPayrollLabel">Weekly Payroll Estimate:</span>
-        <input type="number" id="weeklyPayroll" name="weeklyPayroll">
-      </label>
+        <label>
+          <span id="businessTypeLabel">Type of Business Operation:</span>
+          <input type="text" name="businessType">
+        </label>
 
-      <label>
-        <span id="annualPayrollLabel">Annual Payroll (calculated × 40 weeks):</span>
-        <input type="number" id="annualPayroll" name="annualPayroll" readonly>
-      </label>
+        <label>
+          <span id="weeklyPayrollLabel">Weekly Payroll Estimate:</span>
+          <input type="number" id="weeklyPayroll" name="weeklyPayroll">
+        </label>
 
-      <label>
-        <span id="coverageYearsLabel">Years of Continuous Coverage:</span>
-        <select id="coverageYears" name="coverageYears">
-          <option value="0">0</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5+">5+</option>
-        </select>
-      </label>
-    </div>
+        <label>
+          <span id="annualPayrollLabel">Annual Payroll (calculated × 40 weeks):</span>
+          <input type="number" id="annualPayroll" name="annualPayroll" readonly>
+        </label>
 
-    <!-- Auto Insurance -->
-    <div class="section" id="autoFields" style="display:none;">
-      <h2 id="autoTitle">Auto Insurance</h2>
+        <label>
+          <span id="coverageYearsLabel">Years of Continuous Coverage:</span>
+          <select id="coverageYears" name="coverageYears">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5+">5+</option>
+          </select>
+        </label>
+      </div>
 
-      <label>
-        <span id="numDriversLabel">Number of Drivers:</span>
-        <input type="number" id="numDrivers">
-      </label>
-      <div id="driverDetails"></div>
+      <!-- Auto Insurance -->
+      <div class="section" id="autoFields" style="display:none;">
+        <h2 id="autoTitle">Auto Insurance</h2>
 
-      <label>
-        <span id="numVehiclesLabel">Number of Vehicles:</span>
-        <input type="number" id="numVehicles">
-      </label>
-      <div id="vehicleDetails"></div>
+        <label>
+          <span id="numDriversLabel">Number of Drivers:</span>
+          <input type="number" id="numDrivers">
+        </label>
+        <div id="driverDetails"></div>
 
-      <h3 id="coverageOptionsTitle">Coverage Options</h3>
+        <label>
+          <span id="numVehiclesLabel">Number of Vehicles:</span>
+          <input type="number" id="numVehicles">
+        </label>
+        <div id="vehicleDetails"></div>
 
-      <label>
-        <span id="bodilyInjuryLabel">Bodily Injury Limit (per person/per accident):</span>
-        <select name="bodilyInjury">
-          <option value="">-- Select Limit --</option>
-          <option value="25,000/50,000">$25,000 / $50,000</option>
-          <option value="50,000/100,000">$50,000 / $100,000</option>
-          <option value="100,000/300,000">$100,000 / $300,000</option>
-          <option value="250,000/500,000">$250,000 / $500,000</option>
-          <option value="500,000/500,000">$500,000 / $500,000</option>
-          <option value="1,000,000/1,000,000">$1,000,000 / $1,000,000</option>
-        </select>
-      </label>
+        <h3 id="coverageOptionsTitle">Coverage Options</h3>
 
-      <label>
-        <span id="propertyDamageLabel">Property Damage Limit:</span>
-        <select name="propertyDamage">
-          <option value="">-- Select Limit --</option>
-          <option value="25,000">$25,000</option>
-          <option value="50,000">$50,000</option>
-          <option value="100,000">$100,000</option>
-          <option value="250,000">$250,000</option>
-          <option value="500,000">$500,000</option>
-          <option value="1,000,000">$1,000,000</option>
-        </select>
-      </label>
+        <label>
+          <span id="bodilyInjuryLabel">Bodily Injury Limit (per person/per accident):</span>
+          <select name="bodilyInjury">
+            <option value="">-- Select Limit --</option>
+            <option value="25,000/50,000">$25,000 / $50,000</option>
+            <option value="50,000/100,000">$50,000 / $100,000</option>
+            <option value="100,000/300,000">$100,000 / $300,000</option>
+            <option value="250,000/500,000">$250,000 / $500,000</option>
+            <option value="500,000/500,000">$500,000 / $500,000</option>
+            <option value="1,000,000/1,000,000">$1,000,000 / $1,000,000</option>
+          </select>
+        </label>
 
-      <label>
-        <span id="compDeductibleLabel">Comprehensive Deductible:</span>
-        <select name="comprehensiveDeductible">
-          <option value="">-- Select Deductible --</option>
-          <option value="50">$50</option>
-          <option value="100">$100</option>
-          <option value="250">$250</option>
-          <option value="500">$500</option>
-          <option value="1,000">$1,000</option>
-          <option value="2,500">$2,500</option>
-        </select>
-      </label>
+        <label>
+          <span id="propertyDamageLabel">Property Damage Limit:</span>
+          <select name="propertyDamage">
+            <option value="">-- Select Limit --</option>
+            <option value="25,000">$25,000</option>
+            <option value="50,000">$50,000</option>
+            <option value="100,000">$100,000</option>
+            <option value="250,000">$250,000</option>
+            <option value="500,000">$500,000</option>
+            <option value="1,000,000">$1,000,000</option>
+          </select>
+        </label>
 
-      <label>
-        <span id="collisionDeductibleLabel">Collision Deductible:</span>
-        <select name="collisionDeductible">
-          <option value="">-- Select Deductible --</option>
-          <option value="50">$50</option>
-          <option value="100">$100</option>
-          <option value="250">$250</option>
-          <option value="500">$500</option>
-          <option value="1,000">$1,000</option>
-          <option value="2,500">$2,500</option>
-        </select>
-      </label>
-    </div>
+        <label>
+          <span id="compDeductibleLabel">Comprehensive Deductible:</span>
+          <select name="comprehensiveDeductible">
+            <option value="">-- Select Deductible --</option>
+            <option value="50">$50</option>
+            <option value="100">$100</option>
+            <option value="250">$250</option>
+            <option value="500">$500</option>
+            <option value="1,000">$1,000</option>
+            <option value="2,500">$2,500</option>
+          </select>
+        </label>
 
-    <!-- Homeowners Insurance -->
-    <div class="section" id="homeFields" style="display:none;">
-      <h2 id="homeTitle">Homeowners Insurance</h2>
+        <label>
+          <span id="collisionDeductibleLabel">Collision Deductible:</span>
+          <select name="collisionDeductible">
+            <option value="">-- Select Deductible --</option>
+            <option value="50">$50</option>
+            <option value="100">$100</option>
+            <option value="250">$250</option>
+            <option value="500">$500</option>
+            <option value="1,000">$1,000</option>
+            <option value="2,500">$2,500</option>
+          </select>
+        </label>
+      </div>
 
-      <label>
-        <span id="addressLabel">Address:</span>
-        <input type="text" name="address">
-      </label>
-      <iframe id="streetView" width="100%" height="200" style="margin-top:10px;" frameborder="0"></iframe>
+      <!-- Homeowners Insurance -->
+      <div class="section" id="homeFields" style="display:none;">
+        <h2 id="homeTitle">Homeowners Insurance</h2>
 
-      <label>
-        <span id="sqftLabel">Square Footage:</span>
-        <input type="number" name="sqft">
-      </label>
+        <!-- Address is already in General Information -->
 
-      <label>
-        <span id="yearBuiltLabel">Year Built:</span>
-        <input type="number" name="yearBuilt">
-      </label>
+        <label>
+          <span id="sqftLabel">Square Footage:</span>
+          <input type="number" name="sqft">
+        </label>
 
-      <label>
-        <span id="storiesLabel">Number of Stories:</span>
-        <input type="number" name="stories">
-      </label>
+        <label>
+          <span id="yearBuiltLabel">Year Built:</span>
+          <input type="number" name="yearBuilt">
+        </label>
 
-      <label>
-        <span id="replacementValueLabel">Estimated Replacement Value:</span>
-        <input type="number" name="replacementValue">
-      </label>
-    </div>
+        <label>
+          <span id="storiesLabel">Number of Stories:</span>
+          <input type="number" name="stories">
+        </label>
 
-    <button type="submit" id="submitBtn">Submit Quote Request</button>
-  </form>
+        <label>
+          <span id="replacementValueLabel">Estimated Replacement Value:</span>
+          <input type="number" name="replacementValue">
+        </label>
+
+        <!-- New Siding Type dropdown -->
+        <label>
+          <span id="sidingTypeLabel">Type of Siding:</span>
+          <select id="sidingType" name="sidingType">
+            <option value="">-- Select Type --</option>
+            <option value="brick">Brick</option>
+            <option value="hardieBoard">Hardie Board</option>
+            <option value="metal">Metal</option>
+            <option value="vinyl">Vinyl</option>
+            <option value="wood">Wood</option>
+          </select>
+        </label>
+      </div>
+
+      <button type="submit" id="submitBtn">Submit Quote Request</button>
+    </form>
+  </div>
 
   <script>
     // --- DOM references ---
@@ -260,9 +460,12 @@
     const numVehicles = document.getElementById('numVehicles');
     const weeklyPayroll = document.getElementById('weeklyPayroll');
     const annualPayroll = document.getElementById('annualPayroll');
-    const streetView = document.getElementById('streetView');
-    const addressInput = document.querySelector('input[name="address"]');
+    const addressInput = document.getElementById('address-input');
+    const addressSuggestions = document.getElementById('address-suggestions');
+    const addressLatField = document.getElementById('address-lat');
+    const addressLonField = document.getElementById('address-lon');
     const langToggleBtn = document.getElementById('langToggle');
+    const sidingTypeSelect = document.getElementById('sidingType');
 
     // --- Section toggling ---
     wcglCheck.addEventListener('change', () => {
@@ -305,16 +508,90 @@
       annualPayroll.value = weekly * 40;
     });
 
-    // --- Google Street View embed (replace YOUR_API_KEY) ---
-    if (addressInput) {
-      addressInput.addEventListener('blur', (e) => {
-        const address = encodeURIComponent(e.target.value);
-        if (address) {
-          streetView.src =
-            `https://www.google.com/maps/embed/v1/streetview?key=YOUR_API_KEY&location=${address}`;
-        }
+    // --- Address autocomplete using maps.co ---
+    const MAPSCO_API_KEY = "6930d4d437fad769672610qmbb9060f"; // replace with your maps.co key
+    let addressDebounceTimeout = null;
+
+    function clearAddressSuggestions() {
+      if (addressSuggestions) {
+        addressSuggestions.innerHTML = '';
+      }
+    }
+
+    function showAddressSuggestions(results) {
+      clearAddressSuggestions();
+      if (!Array.isArray(results) || results.length === 0 || !addressSuggestions) return;
+
+      results.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item.display_name;
+        li.dataset.lat = item.lat;
+        li.dataset.lon = item.lon;
+
+        li.addEventListener('click', () => {
+          if (addressInput) {
+            addressInput.value = item.display_name;
+          }
+
+          if (addressLatField) addressLatField.value = item.lat || "";
+          if (addressLonField) addressLonField.value = item.lon || "";
+
+          clearAddressSuggestions();
+        });
+
+        addressSuggestions.appendChild(li);
       });
     }
+
+    function fetchAddressSuggestions(query) {
+      if (!MAPSCO_API_KEY) {
+        return;
+      }
+      const url =
+        "https://geocode.maps.co/search" +
+        "?q=" + encodeURIComponent(query) +
+        "&api_key=" + encodeURIComponent(MAPSCO_API_KEY) +
+        "&limit=5" +
+        "&countrycodes=us";
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          showAddressSuggestions(data);
+        })
+        .catch(error => {
+          console.error("Error fetching addresses:", error);
+          clearAddressSuggestions();
+        });
+    }
+
+    if (addressInput) {
+      addressInput.addEventListener('input', () => {
+        const query = addressInput.value.trim();
+        clearTimeout(addressDebounceTimeout);
+
+        if (query.length < 3) {
+          clearAddressSuggestions();
+          return;
+        }
+
+        addressDebounceTimeout = setTimeout(() => {
+          fetchAddressSuggestions(query);
+        }, 300);
+      });
+    }
+
+    // Hide suggestions when clicking outside the address area
+    document.addEventListener('click', (event) => {
+      if (
+        addressInput &&
+        addressSuggestions &&
+        !addressInput.contains(event.target) &&
+        !addressSuggestions.contains(event.target)
+      ) {
+        clearAddressSuggestions();
+      }
+    });
 
     // --- Translation dictionary ---
     const dictionary = {
@@ -347,6 +624,7 @@
         yearBuiltLabel: "Year Built:",
         storiesLabel: "Number of Stories:",
         replacementValueLabel: "Estimated Replacement Value:",
+        sidingTypeLabel: "Type of Siding:",
         submitBtn: "Submit Quote Request",
         langToggle: "Español"
       },
@@ -369,9 +647,9 @@
         numDriversLabel: "Número de Conductores:",
         numVehiclesLabel: "Número de Vehículos:",
         coverageOptionsTitle: "Opciones de Cobertura",
-        bodilyInjuryLabel: "Límite de Danos Corporales (por persona/por accidente):",
+        bodilyInjuryLabel: "Límite de Daños Corporales (por persona/por accidente):",
         propertyDamageLabel: "Límite de Daños a la Propiedad:",
-        compDeductibleLabel: "Deducible de Comprehensive:",
+        compDeductibleLabel: "Deducible de Cobertura Completa:",
         collisionDeductibleLabel: "Deducible de Colisión:",
         homeTitle: "Seguro de Casa",
         addressLabel: "Dirección:",
@@ -379,12 +657,13 @@
         yearBuiltLabel: "Año de Construcción:",
         storiesLabel: "Número de Pisos:",
         replacementValueLabel: "Valor de Reemplazo Estimado:",
+        sidingTypeLabel: "Tipo de Revestimiento (Siding):",
         submitBtn: "Enviar Solicitud de Cotización",
         langToggle: "English"
       }
     };
 
-    // --- Dropdown options (for coverage years only) ---
+    // --- Dropdown options ---
     const optionsDict = {
       en: {
         coverageYears: [
@@ -394,6 +673,14 @@
           { value: "3", label: "3" },
           { value: "4", label: "4" },
           { value: "5+", label: "5+" }
+        ],
+        sidingType: [
+          { value: "", label: "-- Select Type --" },
+          { value: "brick", label: "Brick" },
+          { value: "hardieBoard", label: "Hardie Board" },
+          { value: "metal", label: "Metal" },
+          { value: "vinyl", label: "Vinyl" },
+          { value: "wood", label: "Wood" }
         ]
       },
       es: {
@@ -404,6 +691,14 @@
           { value: "3", label: "3 años" },
           { value: "4", label: "4 años" },
           { value: "5+", label: "5+ años" }
+        ],
+        sidingType: [
+          { value: "", label: "-- Seleccione Tipo --" },
+          { value: "brick", label: "Ladrillo" },
+          { value: "hardieBoard", label: "Hardie Board (fibrocemento)" },
+          { value: "metal", label: "Metal" },
+          { value: "vinyl", label: "Vinilo" },
+          { value: "wood", label: "Madera" }
         ]
       }
     };
@@ -431,8 +726,9 @@
         const el = document.getElementById(key);
         if (el) el.textContent = map[key];
       }
-      // Update coverage years select labels
+      // Update coverage years & siding type selects
       populateDropdown("coverageYears", optionsDict[lang].coverageYears);
+      populateDropdown("sidingType", optionsDict[lang].sidingType);
     }
 
     let currentLang = "en";
@@ -445,4 +741,3 @@
   </script>
 </body>
 </html>
-
